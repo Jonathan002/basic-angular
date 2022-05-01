@@ -1,35 +1,33 @@
-import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { MockBuilder, MockedComponentFixture, MockRender } from 'ng-mocks';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  let fixture: MockedComponentFixture
+  let params: { waterState: string };
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule
-      ],
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+    console.log('===============');
+    await MockBuilder(AppComponent)
+    const params = { waterState: 'liquid' };
+    fixture = MockRender(AppComponent, params)
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it(`should trigger ngOnChanges`, () => {
+    console.log('fixture.point.componentInstance.waterState');
+    fixture.point.componentInstance.waterState = 'frozen';
+    fixture.detectChanges() // frozen wont trigger
   });
 
-  it(`should have as title 'basic-angular'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('basic-angular');
+  it(`should trigger ngOnChanges normally - with params`, () => {
+    console.log('params.waterState');
+    params.waterState = 'gas';
+    fixture.detectChanges() // gas wont trigger
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('basic-angular app is running!');
+  it(`should trigger ngOnChanges normally`, () => {
+    console.log('fixture.componentInstance.waterState');
+    (fixture.componentInstance as any).waterState = 'fourthUnknownState';
+    fixture.detectChanges()
   });
+
+
 });
